@@ -1,0 +1,1281 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学生成绩快速排序系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft YaHei', 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 90vw;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #3498db, #2c3e50);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .header p {
+            color: #7f8c8d;
+            font-size: 1.1em;
+        }
+        
+        .scenario-intro {
+            background: #fff;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            border-left: 5px solid #3498db;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        
+        .scenario-intro h2 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .scenario-intro h2 i {
+            color: #3498db;
+        }
+        
+        .scenario-intro .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .feature {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 3px solid #3498db;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        @media (max-width: 900px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .panel {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .panel h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eee;
+        }
+        
+        .student-list {
+            max-height: 400px;
+            overflow-y: auto;
+            margin: 20px 0;
+        }
+        
+        .student-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            margin-bottom: 10px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid #3498db;
+            transition: all 0.3s;
+        }
+        
+        .student-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .student-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .student-avatar {
+            width: 40px;
+            height: 40px;
+            background: #3498db;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .student-name {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .student-score {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #e74c3c;
+        }
+        
+        .student-status {
+            font-size: 0.9em;
+            padding: 4px 12px;
+            border-radius: 15px;
+            background: #ecf0f1;
+            color: #7f8c8d;
+        }
+        
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 25px 0;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(52, 152, 219, 0.3);
+        }
+        
+        .btn-secondary {
+            background: #ecf0f1;
+            color: #2c3e50;
+        }
+        
+        .btn-secondary:hover {
+            background: #dfe6e9;
+            transform: translateY(-2px);
+        }
+        
+        .btn-success {
+            background: linear-gradient(45deg, #2ecc71, #27ae60);
+            color: white;
+        }
+        
+        .btn-warning {
+            background: linear-gradient(45deg, #f39c12, #e67e22);
+            color: white;
+        }
+        
+        .input-group {
+            margin: 20px 0;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #2c3e50;
+            font-weight: 500;
+        }
+        
+        .input-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        .input-group input:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+        
+        .slider-container {
+            margin: 25px 0;
+        }
+        
+        .slider {
+            width: 100%;
+            height: 6px;
+            -webkit-appearance: none;
+            background: #ddd;
+            border-radius: 3px;
+            outline: none;
+            margin: 15px 0;
+        }
+        
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #3498db;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        .visualization {
+            position: relative;
+            height: 400px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        
+        .algorithm-steps {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 20px;
+        }
+        
+        .step {
+            padding: 10px 15px;
+            margin-bottom: 10px;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+            font-size: 0.95em;
+        }
+        
+        .step.active {
+            background: #e3f2fd;
+            border-left-color: #e74c3c;
+            font-weight: 500;
+        }
+        
+        .statistics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 25px 0;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #3498db;
+            margin: 10px 0;
+        }
+        
+        .stat-label {
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+        
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+        
+        .color-pivot {
+            background-color: #e74c3c;
+        }
+        
+        .color-comparing {
+            background-color: #f39c12;
+        }
+        
+        .color-swapping {
+            background-color: #9b59b6;
+        }
+        
+        .color-sorted {
+            background-color: #2ecc71;
+        }
+        
+        .color-normal {
+            background-color: #3498db;
+        }
+        
+        .algorithm-explanation {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin-top: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .code-block {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-family: 'Consolas', monospace;
+            font-size: 14px;
+            overflow-x: auto;
+        }
+        
+        .code-keyword {
+            color: #3498db;
+        }
+        
+        .code-function {
+            color: #e74c3c;
+        }
+        
+        .code-number {
+            color: #2ecc71;
+        }
+        
+        .code-comment {
+            color: #7f8c8d;
+        }
+        
+        .highlight {
+            background: #fffacd;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+        
+        .performance {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .performance-item {
+            text-align: center;
+        }
+        
+        .performance-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .performance-label {
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .modal h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+        
+        .close-modal {
+            float: right;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #7f8c8d;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            background: #2ecc71;
+            color: white;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            display: none;
+            z-index: 1001;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 学生成绩快速排序系统</h1>
+            <p>应用场景：使用快速排序算法对学生成绩进行高效排序和统计分析</p>
+        </div>
+        
+        <div class="scenario-intro">
+            <h2><i>🎯</i> 应用场景说明</h2>
+            <p>本系统模拟学校教务处对学生考试成绩进行排序和分析的过程。通过快速排序算法，可以高效地对大量学生成绩进行排序，同时可视化展示排序过程，帮助学生理解算法的原理。</p>
+            <div class="features">
+                <div class="feature">📝 支持批量添加学生成绩数据</div>
+                <div class="feature">⚡ 使用快速排序进行高效排序</div>
+                <div class="feature">👁️ 可视化展示排序每一步过程</div>
+                <div class="feature">📊 提供详细的成绩统计分析</div>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <div class="panel">
+                <h2>👨‍🎓 学生成绩管理</h2>
+                <div class="input-group">
+                    <label>批量添加学生成绩（用空格分隔，如：85 92 78 88 95）</label>
+                    <input type="text" id="batchInput" placeholder="请输入成绩，如：85 92 78 88 95">
+                </div>
+                
+                <div class="controls">
+                    <button class="btn btn-primary" id="addScores">
+                        <i>➕</i> 添加成绩
+                    </button>
+                    <button class="btn btn-secondary" id="randomScores">
+                        <i>🎲</i> 随机生成
+                    </button>
+                    <button class="btn btn-success" id="sortScores">
+                        <i>⚡</i> 开始排序
+                    </button>
+                    <button class="btn btn-warning" id="resetScores">
+                        <i>🔄</i> 重置
+                    </button>
+                </div>
+                
+                <div class="student-list" id="studentList">
+                    <!-- 学生列表将在这里动态生成 -->
+                </div>
+                
+                <div class="statistics">
+                    <div class="stat-card">
+                        <div class="stat-label">学生总数</div>
+                        <div class="stat-value" id="totalStudents">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">平均成绩</div>
+                        <div class="stat-value" id="averageScore">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">最高分</div>
+                        <div class="stat-value" id="maxScore">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">最低分</div>
+                        <div class="stat-value" id="minScore">0</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="panel">
+                <h2>🔍 排序过程可视化</h2>
+                
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color color-pivot"></div>
+                        <span>基准元素 (Pivot)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color color-comparing"></div>
+                        <span>正在比较</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color color-swapping"></div>
+                        <span>正在交换</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color color-sorted"></div>
+                        <span>已排序位置</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color color-normal"></div>
+                        <span>未处理</span>
+                    </div>
+                </div>
+                
+                <div class="slider-container">
+                    <label>动画速度控制</label>
+                    <input type="range" class="slider" id="speedControl" min="100" max="1000" value="300">
+                    <div style="display: flex; justify-content: space-between;">
+                        <span>慢</span>
+                        <span id="speedValue">中等</span>
+                        <span>快</span>
+                    </div>
+                </div>
+                
+                <div class="controls">
+                    <button class="btn btn-secondary" id="stepByStep">
+                        <i>⏭️</i> 单步执行
+                    </button>
+                    <button class="btn btn-secondary" id="pauseResume">
+                        <i>⏸️</i> 暂停/继续
+                    </button>
+                    <button class="btn btn-secondary" id="showAlgorithm">
+                        <i>📖</i> 算法原理
+                    </button>
+                </div>
+                
+                <div class="visualization" id="visualization">
+                    <!-- 可视化图表将在这里绘制 -->
+                </div>
+                
+                <div class="performance">
+                    <div class="performance-item">
+                        <div class="performance-value" id="comparisonCount">0</div>
+                        <div class="performance-label">比较次数</div>
+                    </div>
+                    <div class="performance-item">
+                        <div class="performance-value" id="swapCount">0</div>
+                        <div class="performance-label">交换次数</div>
+                    </div>
+                    <div class="performance-item">
+                        <div class="performance-value" id="timeTaken">0ms</div>
+                        <div class="performance-label">耗时</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="panel">
+            <h2>📝 算法步骤记录</h2>
+            <div class="algorithm-steps" id="algorithmSteps">
+                <!-- 算法步骤将在这里显示 -->
+            </div>
+        </div>
+        
+        <div class="algorithm-explanation">
+            <h2>📚 快速排序算法原理</h2>
+            <p><strong>快速排序</strong>是一种高效的排序算法，采用<strong>分治法</strong>思想。其核心步骤为：</p>
+            <ol style="margin: 15px 0; padding-left: 20px;">
+                <li>从数列中挑出一个元素作为<strong>基准 (pivot)</strong></li>
+                <li>重新排列数列，所有比基准小的元素放在基准前面，所有比基准大的元素放在基准后面</li>
+                <li>递归地对基准前后的子序列进行快速排序</li>
+            </ol>
+            
+            <div class="code-block">
+                <pre><span class="code-keyword">void</span> <span class="code-function">quick_sort</span>(<span class="code-keyword">int</span> q[], <span class="code-keyword">int</span> l, <span class="code-keyword">int</span> r) {
+    <span class="code-keyword">if</span> (l >= r) <span class="code-keyword">return</span>;
+    <span class="code-keyword">int</span> i = l - <span class="code-number">1</span>, j = r + <span class="code-number">1</span>, x = q[l + r >> <span class="code-number">1</span>];
+    <span class="code-keyword">while</span> (i < j) {
+        <span class="code-keyword">do</span> i++; <span class="code-keyword">while</span> (q[i] < x);
+        <span class="code-keyword">do</span> j--; <span class="code-keyword">while</span> (q[j] > x);
+        <span class="code-keyword">if</span> (i < j) <span class="code-function">swap</span>(q[i], q[j]);
+    }
+    <span class="code-function">quick_sort</span>(q, l, j);
+    <span class="code-function">quick_sort</span>(q, j + <span class="code-number">1</span>, r);
+}</pre>
+            </div>
+            
+            <div class="features">
+                <div class="feature">
+                    <strong>时间复杂度</strong><br>
+                    最好/平均: <span class="highlight">O(n log n)</span><br>
+                    最坏: <span class="highlight">O(n²)</span>
+                </div>
+                <div class="feature">
+                    <strong>空间复杂度</strong><br>
+                    最好/平均: <span class="highlight">O(log n)</span><br>
+                    最坏: <span class="highlight">O(n)</span>
+                </div>
+                <div class="feature">
+                    <strong>稳定性</strong><br>
+                    <span class="highlight">不稳定排序算法</span>
+                </div>
+                <div class="feature">
+                    <strong>应用场景</strong><br>
+                    大数据量排序<br>
+                    内存受限环境
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal" id="algorithmModal">
+        <div class="modal-content">
+            <button class="close-modal" id="closeModal">×</button>
+            <h3>🔍 快速排序算法详解</h3>
+            <p>本系统使用的快速排序算法步骤如下：</p>
+            <ol style="margin: 15px 0; padding-left: 20px;">
+                <li>选择基准元素：<code>x = q[l + r >> 1]</code>（取中间元素）</li>
+                <li>初始化两个指针：<code>i = l - 1</code>, <code>j = r + 1</code></li>
+                <li>移动 i 指针向右，直到找到大于等于基准的元素</li>
+                <li>移动 j 指针向左，直到找到小于等于基准的元素</li>
+                <li>如果 i < j，交换两个元素</li>
+                <li>重复步骤3-5直到 i >= j</li>
+                <li>递归排序左半部分：<code>quick_sort(q, l, j)</code></li>
+                <li>递归排序右半部分：<code>quick_sort(q, j + 1, r)</code></li>
+            </ol>
+            <p><strong>特点：</strong></p>
+            <ul style="margin: 10px 0; padding-left: 20px;">
+                <li>使用<strong>中间元素</strong>作为基准，避免最坏情况</li>
+                <li><strong>do-while</strong>循环确保至少执行一次</li>
+                <li><strong>指针从边界外开始</strong>，简化边界处理</li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="notification" id="notification">
+        操作成功！
+    </div>
+
+    <script>
+        class StudentScoresSystem {
+            constructor() {
+                this.scores = [];
+                this.students = [];
+                this.isSorting = false;
+                this.isPaused = false;
+                this.speed = 300;
+                this.steps = [];
+                this.currentStep = 0;
+                this.comparisons = 0;
+                this.swaps = 0;
+                this.startTime = 0;
+                
+                this.animationQueue = [];
+                this.currentAnimation = null;
+                
+                // DOM 元素
+                this.canvas = null;
+                this.ctx = null;
+                
+                this.init();
+            }
+            
+            init() {
+                // 初始化Canvas
+                this.initCanvas();
+                
+                // 绑定事件
+                this.bindEvents();
+                
+                // 初始显示
+                this.updateDisplay();
+                this.addStep("系统已就绪，请添加学生成绩");
+            }
+            
+            initCanvas() {
+                const container = document.getElementById('visualization');
+                this.canvas = document.createElement('canvas');
+                container.appendChild(this.canvas);
+                
+                this.ctx = this.canvas.getContext('2d');
+                this.resizeCanvas();
+                
+                window.addEventListener('resize', () => this.resizeCanvas());
+            }
+            
+            resizeCanvas() {
+                const container = document.getElementById('visualization');
+                this.canvas.width = container.clientWidth;
+                this.canvas.height = container.clientHeight;
+                
+                if (this.scores.length > 0) {
+                    this.renderVisualization();
+                }
+            }
+            
+            bindEvents() {
+                // 按钮事件
+                document.getElementById('addScores').addEventListener('click', () => this.addScores());
+                document.getElementById('randomScores').addEventListener('click', () => this.generateRandomScores());
+                document.getElementById('sortScores').addEventListener('click', () => this.startQuickSort());
+                document.getElementById('resetScores').addEventListener('click', () => this.reset());
+                
+                // 控制事件
+                document.getElementById('stepByStep').addEventListener('click', () => this.stepForward());
+                document.getElementById('pauseResume').addEventListener('click', () => this.togglePause());
+                document.getElementById('showAlgorithm').addEventListener('click', () => {
+                    document.getElementById('algorithmModal').style.display = 'flex';
+                });
+                
+                // 模态框事件
+                document.getElementById('closeModal').addEventListener('click', () => {
+                    document.getElementById('algorithmModal').style.display = 'none';
+                });
+                
+                // 速度控制
+                document.getElementById('speedControl').addEventListener('input', (e) => {
+                    this.speed = 1100 - e.target.value;
+                    const speedText = this.speed <= 200 ? '快' : this.speed <= 500 ? '中等' : '慢';
+                    document.getElementById('speedValue').textContent = speedText;
+                });
+                
+                // 批量输入回车事件
+                document.getElementById('batchInput').addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        this.addScores();
+                    }
+                });
+                
+                // 点击模态框背景关闭
+                document.getElementById('algorithmModal').addEventListener('click', (e) => {
+                    if (e.target.id === 'algorithmModal') {
+                        e.target.style.display = 'none';
+                    }
+                });
+            }
+            
+            addScores() {
+                const input = document.getElementById('batchInput').value.trim();
+                if (!input) {
+                    this.showNotification('请输入成绩数据');
+                    return;
+                }
+                
+                const newScores = input.split(' ')
+                    .map(score => parseInt(score))
+                    .filter(score => !isNaN(score) && score >= 0 && score <= 100);
+                
+                if (newScores.length === 0) {
+                    this.showNotification('请输入有效的成绩（0-100之间的数字）');
+                    return;
+                }
+                
+                this.scores.push(...newScores);
+                this.updateStudents();
+                this.updateDisplay();
+                this.addStep(`添加了 ${newScores.length} 个学生成绩`);
+                
+                document.getElementById('batchInput').value = '';
+                this.showNotification('成绩添加成功！');
+            }
+            
+            generateRandomScores() {
+                const count = 10; // 默认生成10个成绩
+                this.scores = Array.from({length: count}, () => 
+                    Math.floor(Math.random() * 40) + 60 // 生成60-100之间的成绩
+                );
+                
+                this.updateStudents();
+                this.updateDisplay();
+                this.addStep(`随机生成了 ${count} 个学生成绩`);
+                this.showNotification('随机成绩生成成功！');
+            }
+            
+            updateStudents() {
+                this.students = this.scores.map((score, index) => {
+                    // 生成学生姓名（模拟）
+                    const names = ['张三', '李四', '王五', '赵六', '钱七', '孙八', '周九', '吴十', '郑十一', '王十二'];
+                    const name = names[index % names.length] + (index >= names.length ? `-${Math.floor(index/names.length)+1}` : '');
+                    
+                    // 根据成绩设置状态
+                    let status = '良好';
+                    let statusClass = 'student-status';
+                    if (score >= 90) {
+                        status = '优秀';
+                    } else if (score >= 80) {
+                        status = '良好';
+                    } else if (score >= 60) {
+                        status = '及格';
+                    } else {
+                        status = '不及格';
+                    }
+                    
+                    return {
+                        id: index + 1,
+                        name: name,
+                        score: score,
+                        status: status,
+                        statusClass: statusClass,
+                        // 排序状态
+                        sortState: 'normal' // normal, pivot, comparing, swapping, sorted
+                    };
+                });
+            }
+            
+            updateDisplay() {
+                this.updateStudentList();
+                this.updateStatistics();
+                this.renderVisualization();
+            }
+            
+            updateStudentList() {
+                const container = document.getElementById('studentList');
+                container.innerHTML = '';
+                
+                this.students.forEach((student, index) => {
+                    const div = document.createElement('div');
+                    div.className = 'student-item';
+                    div.innerHTML = `
+                        <div class="student-info">
+                            <div class="student-avatar">${index + 1}</div>
+                            <div>
+                                <div class="student-name">${student.name}</div>
+                                <div class="${student.statusClass}">${student.status}</div>
+                            </div>
+                        </div>
+                        <div class="student-score">${student.score}分</div>
+                    `;
+                    container.appendChild(div);
+                });
+                
+                document.getElementById('totalStudents').textContent = this.students.length;
+            }
+            
+            updateStatistics() {
+                if (this.scores.length === 0) {
+                    document.getElementById('averageScore').textContent = '0';
+                    document.getElementById('maxScore').textContent = '0';
+                    document.getElementById('minScore').textContent = '0';
+                    return;
+                }
+                
+                const sum = this.scores.reduce((a, b) => a + b, 0);
+                const avg = Math.round(sum / this.scores.length);
+                const max = Math.max(...this.scores);
+                const min = Math.min(...this.scores);
+                
+                document.getElementById('averageScore').textContent = avg;
+                document.getElementById('maxScore').textContent = max;
+                document.getElementById('minScore').textContent = min;
+            }
+            
+            renderVisualization() {
+                if (this.scores.length === 0) {
+                    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                    
+                    // 显示提示信息
+                    this.ctx.fillStyle = '#7f8c8d';
+                    this.ctx.font = '18px Arial';
+                    this.ctx.textAlign = 'center';
+                    this.ctx.fillText('请添加学生成绩数据', this.canvas.width / 2, this.canvas.height / 2);
+                    return;
+                }
+                
+                const ctx = this.ctx;
+                const width = this.canvas.width;
+                const height = this.canvas.height;
+                
+                // 清空画布
+                ctx.clearRect(0, 0, width, height);
+                
+                // 绘制背景
+                ctx.fillStyle = '#f8f9fa';
+                ctx.fillRect(0, 0, width, height);
+                
+                // 计算条形图参数
+                const barCount = this.scores.length;
+                const maxBarWidth = Math.min(50, width / (barCount * 1.3));
+                const spacing = maxBarWidth / 3;
+                const totalWidth = barCount * (maxBarWidth + spacing) + spacing;
+                const startX = (width - totalWidth) / 2;
+                
+                const maxScore = Math.max(...this.scores, 100);
+                const scale = (height - 80) / maxScore;
+                
+                // 绘制标题
+                ctx.fillStyle = '#2c3e50';
+                ctx.font = 'bold 16px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('学生成绩排序过程', width / 2, 30);
+                
+                // 绘制每个条形
+                for (let i = 0; i < barCount; i++) {
+                    const x = startX + i * (maxBarWidth + spacing);
+                    const barHeight = this.scores[i] * scale;
+                    const y = height - 40 - barHeight;
+                    
+                    // 根据状态选择颜色
+                    let color;
+                    switch(this.students[i].sortState) {
+                        case 'pivot':
+                            color = '#e74c3c'; // 红色 - 基准元素
+                            break;
+                        case 'comparing':
+                            color = '#f39c12'; // 橙色 - 正在比较
+                            break;
+                        case 'swapping':
+                            color = '#9b59b6'; // 紫色 - 正在交换
+                            break;
+                        case 'sorted':
+                            color = '#2ecc71'; // 绿色 - 已排序
+                            break;
+                        default:
+                            color = '#3498db'; // 蓝色 - 正常
+                    }
+                    
+                    // 绘制条形
+                    ctx.fillStyle = color;
+                    ctx.fillRect(x, y, maxBarWidth, barHeight);
+                    
+                    // 绘制边框
+                    ctx.strokeStyle = '#2c3e50';
+                    ctx.lineWidth = 1;
+                    ctx.strokeRect(x, y, maxBarWidth, barHeight);
+                    
+                    // 绘制成绩数值
+                    ctx.fillStyle = '#2c3e50';
+                    ctx.font = '12px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(this.scores[i], x + maxBarWidth / 2, y - 5);
+                    
+                    // 绘制索引
+                    ctx.fillStyle = '#7f8c8d';
+                    ctx.font = '11px Arial';
+                    ctx.fillText(`[${i}]`, x + maxBarWidth / 2, height - 25);
+                    
+                    // 如果是基准元素，绘制特殊标记
+                    if (this.students[i].sortState === 'pivot') {
+                        ctx.beginPath();
+                        ctx.arc(x + maxBarWidth / 2, y - 10, 5, 0, Math.PI * 2);
+                        ctx.fillStyle = '#e74c3c';
+                        ctx.fill();
+                    }
+                }
+                
+                // 绘制基准线（60分及格线）
+                const passLineY = height - 40 - 60 * scale;
+                ctx.beginPath();
+                ctx.moveTo(startX - 10, passLineY);
+                ctx.lineTo(startX + totalWidth + 10, passLineY);
+                ctx.strokeStyle = '#e74c3c';
+                ctx.lineWidth = 2;
+                ctx.setLineDash([5, 5]);
+                ctx.stroke();
+                ctx.setLineDash([]);
+                
+                // 绘制及格线标签
+                ctx.fillStyle = '#e74c3c';
+                ctx.font = '12px Arial';
+                ctx.textAlign = 'left';
+                ctx.fillText('及格线 (60分)', startX + totalWidth + 15, passLineY + 5);
+            }
+            
+            addStep(description) {
+                const stepsContainer = document.getElementById('algorithmSteps');
+                const stepDiv = document.createElement('div');
+                stepDiv.className = 'step';
+                stepDiv.textContent = `步骤 ${this.steps.length + 1}: ${description}`;
+                stepDiv.dataset.index = this.steps.length;
+                
+                stepsContainer.appendChild(stepDiv);
+                this.steps.push(description);
+                
+                // 滚动到底部
+                stepsContainer.scrollTop = stepsContainer.scrollHeight;
+                
+                // 更新当前步骤高亮
+                this.highlightCurrentStep();
+            }
+            
+            highlightCurrentStep() {
+                document.querySelectorAll('.step').forEach(step => {
+                    step.classList.remove('active');
+                });
+                
+                if (this.currentStep > 0) {
+                    const currentStepDiv = document.querySelector(`.step[data-index="${this.currentStep - 1}"]`);
+                    if (currentStepDiv) {
+                        currentStepDiv.classList.add('active');
+                    }
+                }
+            }
+            
+            async startQuickSort() {
+                if (this.scores.length === 0) {
+                    this.showNotification('请先添加学生成绩');
+                    return;
+                }
+                
+                if (this.isSorting) {
+                    this.showNotification('排序正在进行中');
+                    return;
+                }
+                
+                this.isSorting = true;
+                this.isPaused = false;
+                this.comparisons = 0;
+                this.swaps = 0;
+                this.startTime = Date.now();
+                this.currentStep = 0;
+                
+                // 清空步骤记录
+                document.getElementById('algorithmSteps').innerHTML = '';
+                this.steps = [];
+                
+                this.addStep("快速排序开始");
+                this.addStep(`选择基准元素策略: 取中间元素作为基准`);
+                
+                // 备份原始数组用于显示
+                const originalScores = [...this.scores];
+                
+                // 执行快速排序
+                await this.quickSort(0, this.scores.length - 1);
+                
+                // 排序完成
+                this.isSorting = false;
+                this.addStep(`排序完成！总比较次数: ${this.comparisons}, 总交换次数: ${this.swaps}`);
+                
+                const timeTaken = Date.now() - this.startTime;
+                document.getElementById('timeTaken').textContent = `${timeTaken}ms`;
+                
+                this.showNotification(`排序完成！耗时 ${timeTaken}ms，比较 ${this.comparisons} 次，交换 ${this.swaps} 次`);
+            }
+            
+            async quickSort(l, r) {
+                if (!this.isSorting || l >= r) {
+                    if (l === r) {
+                        this.students[l].sortState = 'sorted';
+                        this.renderVisualization();
+                        await this.delay();
+                    }
+                    return;
+                }
+                
+                // 更新状态显示当前处理的区间
+                this.addStep(`处理区间 [${l}, ${r}]，共有 ${r - l + 1} 个元素`);
+                
+                const i = l - 1, j = r + 1;
+                const x = this.scores[Math.floor((l + r) / 2)];
+                
+                // 标记基准元素
+                const pivotIndex = Math.floor((l + r) / 2);
+                this.students[pivotIndex].sortState = 'pivot';
+                this.addStep(`选择基准元素: scores[${pivotIndex}] = ${x}`);
+                this.renderVisualization();
+                await this.delay();
+                
+                let left = i, right = j;
+                
+                while (left < right) {
+                    // 移动左指针
+                    do {
+                        left++;
+                        if (left < right && left !== pivotIndex) {
+                            this.students[left].sortState = 'comparing';
+                            this.renderVisualization();
+                            await this.delay();
+                            this.comparisons++;
+                        }
+                    } while (this.scores[left] < x);
+                    
+                    // 移动右指针
+                    do {
+                        right--;
+                        if (right > left && right !== pivotIndex) {
+                            this.students[right].sortState = 'comparing';
+                            this.renderVisualization();
+                            await this.delay();
+                            this.comparisons++;
+                        }
+                    } while (this.scores[right] > x);
+                    
+                    // 如果指针未相遇，交换元素
+                    if (left < right) {
+                        this.addStep(`交换 scores[${left}]=${this.scores[left]} 和 scores[${right}]=${this.scores[right]}`);
+                        
+                        this.students[left].sortState = 'swapping';
+                        this.students[right].sortState = 'swapping';
+                        this.renderVisualization();
+                        await this.delay();
+                        
+                        // 交换元素
+                        [this.scores[left], this.scores[right]] = [this.scores[right], this.scores[left]];
+                        [this.students[left], this.students[right]] = [this.students[right], this.students[left]];
+                        
+                        this.swaps++;
+                        document.getElementById('swapCount').textContent = this.swaps;
+                        
+                        // 恢复状态
+                        this.students[left].sortState = 'normal';
+                        this.students[right].sortState = 'normal';
+                        this.renderVisualization();
+                        await this.delay();
+                    }
+                }
+                
+                // 恢复基准元素状态
+                this.students[pivotIndex].sortState = 'normal';
+                
+                // 标记分区完成
+                for (let k = l; k <= right; k++) {
+                    this.students[k].sortState = 'sorted';
+                }
+                this.renderVisualization();
+                await this.delay();
+                
+                this.addStep(`分区完成，基准元素 ${x} 已在正确位置`);
+                
+                // 更新性能统计
+                document.getElementById('comparisonCount').textContent = this.comparisons;
+                document.getElementById('swapCount').textContent = this.swaps;
+                document.getElementById('timeTaken').textContent = `${Date.now() - this.startTime}ms`;
+                
+                // 递归排序左右子序列
+                await this.quickSort(l, right);
+                await this.quickSort(right + 1, r);
+            }
+            
+            stepForward() {
+                if (!this.isSorting) {
+                    this.showNotification('请先开始排序');
+                    return;
+                }
+                
+                this.isPaused = false;
+                // 这里可以实现单步执行逻辑
+                this.showNotification('单步执行功能开发中...');
+            }
+            
+            togglePause() {
+                if (!this.isSorting) {
+                    this.showNotification('没有正在进行的排序');
+                    return;
+                }
+                
+                this.isPaused = !this.isPaused;
+                if (this.isPaused) {
+                    this.addStep('排序已暂停');
+                    this.showNotification('排序已暂停');
+                } else {
+                    this.addStep('排序继续执行');
+                    this.showNotification('排序继续执行');
+                }
+            }
+            
+            reset() {
+                this.isSorting = false;
+                this.isPaused = false;
+                this.scores = [];
+                this.students = [];
+                this.steps = [];
+                this.currentStep = 0;
+                this.comparisons = 0;
+                this.swaps = 0;
+                
+                document.getElementById('algorithmSteps').innerHTML = '';
+                document.getElementById('comparisonCount').textContent = '0';
+                document.getElementById('swapCount').textContent = '0';
+                document.getElementById('timeTaken').textContent = '0ms';
+                document.getElementById('batchInput').value = '';
+                
+                this.updateDisplay();
+                this.addStep('系统已重置，请添加新的学生成绩');
+                this.showNotification('系统已重置');
+            }
+            
+            delay() {
+                return new Promise(resolve => {
+                    if (this.isPaused) {
+                        // 暂停状态，等待恢复
+                        const checkPause = () => {
+                            if (!this.isPaused || !this.isSorting) {
+                                resolve();
+                            } else {
+                                setTimeout(checkPause, 100);
+                            }
+                        };
+                        checkPause();
+                    } else {
+                        setTimeout(resolve, this.speed);
+                    }
+                });
+            }
+            
+            showNotification(message) {
+                const notification = document.getElementById('notification');
+                notification.textContent = message;
+                notification.style.display = 'block';
+                
+                setTimeout(() => {
+                    notification.style.display = 'none';
+                }, 3000);
+            }
+        }
+
+        // 初始化系统
+        document.addEventListener('DOMContentLoaded', () => {
+            const system = new StudentScoresSystem();
+            window.system = system; // 用于调试
+        });
+    </script>
+</body>
+</html>
