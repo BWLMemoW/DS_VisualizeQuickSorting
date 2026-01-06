@@ -14,40 +14,37 @@ extern "C" {
 #include <bits/stdc++.h>
 #include <graphics.h>
 #include <conio.h>
-#include <iostream>
-#include <string>
-#include <sstream>
-#include <cstring>  // 添加头文件
-#include <cwchar>   // 添加头文件
 
 using namespace std;
 
-// 结构体定义：用于表示数组元素
+//结构体定义：用于表示数组元素
 struct Object
 {
-    int val, type = 0;  // val: 元素值, type: 元素类型(0=未排序,1=比较中,2=已排序)
+    int val, type = 0;  //val: 元素值, type: 元素类型(0=未排序,1=比较中,2=已排序)
 };
 
-// 辅助函数：将char数组转换为TCHAR数组
-void charToTCHAR(const char* src, TCHAR* dest, int maxSize) {
-#ifdef _UNICODE
-    mbstowcs(dest, src, maxSize);
-#else
-    strncpy(dest, src, maxSize);
-    dest[maxSize - 1] = '\0';
-#endif
+//辅助函数：将char数组转换为TCHAR数组
+void charToTCHAR(const char* src, TCHAR* dest, int maxSize)
+{
+    #ifdef _UNICODE
+        mbstowcs(dest, src, maxSize);
+    #else
+        strncpy(dest, src, maxSize);
+        dest[maxSize - 1] = '\0';
+    #endif
 }
 
-// 显示开始界面
-void ShowStartScreen() {
+//显示开始界面
+void ShowStartScreen()
+{
     int width = getwidth();
     int height = getheight();
     
-    // 设置背景颜色
+    //设置背景颜色
     setbkcolor(BLACK);
     cleardevice();
     
-    // 绘制标题
+    //绘制标题
     settextstyle(36, 0, _T("Arial"));
     settextcolor(LIGHTGREEN);
     
@@ -55,7 +52,7 @@ void ShowStartScreen() {
     int titleWidth = textwidth(titleText);
     outtextxy((width - titleWidth) / 2, height / 4, titleText);
     
-    // 绘制副标题
+    //绘制副标题
     settextstyle(24, 0, _T("Arial"));
     settextcolor(LIGHTCYAN);
     
@@ -63,12 +60,12 @@ void ShowStartScreen() {
     int subtitleWidth = textwidth(subtitleText);
     outtextxy((width - subtitleWidth) / 2, height / 4 + 50, subtitleText);
     
-    // 绘制分隔线
+    //绘制分隔线
     setlinecolor(LIGHTGRAY);
     setlinestyle(PS_SOLID, 2);
     line(width / 4, height / 2, width * 3 / 4, height / 2);
     
-    // 绘制说明文字
+    //绘制说明文字
     settextstyle(16, 0, _T("Arial"));
     settextcolor(YELLOW);
     
@@ -81,11 +78,12 @@ void ShowStartScreen() {
     };
     
     int startY = height / 2 + 30;
-    for (int i = 0; i < 5; i++) {
+    for(int i = 0; i < 5; i++)
+    {
         outtextxy(width / 4, startY + i * 30, instructions[i]);
     }
     
-    // 绘制开始提示
+    //绘制开始提示
     settextstyle(22, 0, _T("Arial"));
     settextcolor(LIGHTMAGENTA);
     
@@ -93,89 +91,96 @@ void ShowStartScreen() {
     int promptWidth = textwidth(startPrompt);
     outtextxy((width - promptWidth) / 2, height * 3 / 4, startPrompt);
     
-    // 绘制版本信息
+    //绘制版本信息
     settextstyle(12, 0, _T("Arial"));
     settextcolor(DARKGRAY);
     
     TCHAR versionText[] = _T("Version 1.0 | Using EasyX Graphics Library");
     outtextxy(width - textwidth(versionText) - 10, height - 25, versionText);
     
-    // 等待用户按下任意键
+    //等待用户按下任意键
     getch();
     
-    // 添加一个简单的动画效果（闪烁提示文字）
-    for (int i = 0; i < 3; i++) {
+    /*
+    //添加一个简单的动画效果（闪烁提示文字）（有BUG，取消了）
+    for(int i = 0; i < 3; i++)
+    {
         settextcolor(i % 2 == 0 ? LIGHTRED : LIGHTMAGENTA);
         outtextxy((width - promptWidth) / 2, height * 3 / 4, startPrompt);
         Sleep(200);
     }
+        */
     
-    // 清屏准备开始排序
+    //清屏准备开始排序
     cleardevice();
 }
 
-// 绘制函数：可视化当前数组状态
-void Draw(Object Arr[10]) {
-    // 获取画布尺寸
+//绘制函数：可视化当前数组状态
+void Draw(Object Arr[10])
+{
+    //获取画布尺寸
     int width = getwidth();
     int height = getheight();
     
-    // 计算柱状图的宽度和间距
+    //计算柱状图的宽度和间距
     int barWidth = width / 15;
     int spacing = width / 30;
     int maxVal = Arr[0].val;
     
-    // 找到最大值以便进行缩放
-    for (int i = 1; i < 10; i++) {
-        if (Arr[i].val > maxVal) {
+    //找到最大值以便进行缩放
+    for(int i = 1; i < 10; i++)
+    {
+        if(Arr[i].val > maxVal)
+        {
             maxVal = Arr[i].val;
         }
     }
     
-    // 计算缩放因子
+    //计算缩放因子
     float scale = (height * 0.8) / maxVal;
     
-    // 清除背景
+    //清除背景
     setbkcolor(BLACK);
     cleardevice();
     
-    // 绘制标题
+    //绘制标题
     settextstyle(24, 0, _T("Arial"));
     settextcolor(LIGHTGRAY);
     
     TCHAR titleText[] = _T("Quick Sort Visualization");
     outtextxy(width/2 - textwidth(titleText)/2, 5, titleText);
     
-    // 绘制操作提示
+    //绘制操作提示
     settextstyle(12, 0, _T("Arial"));
     TCHAR instructionText[] = _T("Press 'R' to restart, 'E' to exit");
     outtextxy(10, 40, instructionText);
     
-    // 设置文本属性
+    //设置文本属性
     settextstyle(14, 0, _T("Arial"));
     setbkmode(TRANSPARENT);
     
-    // 绘制每个数组元素
-    for (int i = 0; i < 10; i++) {
+    //绘制每个数组元素
+    for(int i = 0; i < 10; i++)
+    {
         int x = spacing + i * (barWidth + spacing);
         int barHeight = Arr[i].val * scale;
-        int y = height - barHeight - 60;  // 为底部的文本留出空间
+        int y = height - barHeight - 60;  //为底部的文本留出空间
         
-        // 根据元素类型设置不同的颜色
+        //根据元素类型设置不同的颜色
         if(Arr[i].type == 0) setfillcolor(WHITE);
         else if(Arr[i].type == 1) setfillcolor(YELLOW);
         else setfillcolor(GREEN);
         
-        // 绘制带边框的柱状图
+        //绘制带边框的柱状图
         setlinecolor(DARKGRAY);
         setlinestyle(PS_SOLID, 2);
         fillrectangle(x, y, x + barWidth, height - 60);
         
-        // 在柱状图上方绘制数值
+        //在柱状图上方绘制数值
         char valueText[20];
         sprintf(valueText, "%d", Arr[i].val);
         
-        // 转换为TCHAR类型
+        //转换为TCHAR类型
         TCHAR tValueText[20];
         charToTCHAR(valueText, tValueText, 20);
         
@@ -183,7 +188,7 @@ void Draw(Object Arr[10]) {
         int textWidth = textwidth(tValueText);
         outtextxy(x + (barWidth - textWidth)/2, y - 25, tValueText);
         
-        // 在柱状图下方绘制索引
+        //在柱状图下方绘制索引
         char indexText[10];
         sprintf(indexText, "%d", i);
         
@@ -194,7 +199,7 @@ void Draw(Object Arr[10]) {
         outtextxy(x + (barWidth - indexTextWidth)/2, height - 45, tIndexText);
     }
     
-    // 绘制当前数组的文本表示
+    //绘制当前数组的文本表示
     settextstyle(16, 0, _T("Courier New"));
     
     char arrayText[256];
@@ -208,7 +213,7 @@ void Draw(Object Arr[10]) {
     int textY = height - 25;
     outtextxy(20, textY, tArrayText);
     
-    // 绘制图例
+    //绘制图例
     settextstyle(12, 0, _T("Arial"));
     setfillcolor(WHITE);
     fillrectangle(10, 70, 25, 85);
@@ -226,41 +231,51 @@ void Draw(Object Arr[10]) {
     outtextxy(300, 70, sortedText);
 }
 
-// 等待R键或E键的函数
-void WaitForRKey() {
-    while (true) {
-        if (kbhit()) {
+//等待R键或E键的函数
+void WaitForRKey()
+{
+    while(true)
+    {
+        if(kbhit()) //监听键盘输入
+        {
             char ch = getch();
-            if (ch == 'r' || ch == 'R') {
+            if(ch == 'r' || ch == 'R')
+            {
                 cleardevice();
                 return;
             }
-            if (ch == 'e' || ch == 'E') {
+            if(ch == 'e' || ch == 'E')
+            {
                 closegraph();
                 exit(0);
             }
         }
-        // 短暂延迟以防止CPU过度使用
+        //短暂延迟以防止CPU过度使用
         Sleep(10);
     }
 }
 
-// 可视化排序过程
-void VisualizeSort(Object Arr[]) {
-    // 在开始前重置所有元素类型
-    for (int i = 0; i < 10; i++) {
+//可视化排序过程
+void VisualizeSort(Object Arr[])
+{
+    //在开始前重置所有元素类型
+    for(int i = 0; i < 10; i++)
+    {
         Arr[i].type = 0;
     }
     
     stack<pair<int, int>> stk;
     stk.push({0, 9});
     
-    while (!stk.empty()) {
+    while(!stk.empty())
+    {
         auto [low, high] = stk.top();
         stk.pop();
         
-        if (low >= high) {
-            if (low == high) {
+        if(low >= high)
+        {
+            if(low == high)
+            {
                 Arr[low].type = 2;
                 Draw(Arr);
                 Sleep(500);
@@ -268,42 +283,47 @@ void VisualizeSort(Object Arr[]) {
             continue;
         }
         
-        // 分区操作
+        //分区操作
         Object pivot = Arr[low];
         pivot.type = 1;
         Arr[low].type = 1;
         
         int i = low, j = high;
         
-        // 可视化分区前的状态
+        //可视化分区前的状态
         Draw(Arr);
         Sleep(500);
         
-        while (i < j) {
-            // 移动j指针
+        while(i < j)
+        {
+            //移动j指针
             Arr[j].type = 1;
-            while (i < j && Arr[j].val >= pivot.val) {
+            while(i < j && Arr[j].val >= pivot.val)
+            {
                 Arr[j].type = 0;
                 j--;
-                if (i < j) Arr[j].type = 1;
+                if(i < j) Arr[j].type = 1;
                 Draw(Arr);
                 Sleep(300);
             }
-            if (i < j) {
+            if(i < j)
+            {
                 Arr[i] = Arr[j];
                 i++;
             }
             
-            // 移动i指针
-            if (i < j) Arr[i].type = 1;
-            while (i < j && Arr[i].val <= pivot.val) {
+            //移动i指针
+            if(i < j) Arr[i].type = 1;
+            while(i < j && Arr[i].val <= pivot.val)
+            {
                 Arr[i].type = 0;
                 i++;
-                if (i < j) Arr[i].type = 1;
+                if(i < j) Arr[i].type = 1;
                 Draw(Arr);
                 Sleep(300);
             }
-            if (i < j) {
+            if(i < j)
+            {
                 Arr[j] = Arr[i];
                 j--;
             }
@@ -312,27 +332,29 @@ void VisualizeSort(Object Arr[]) {
         Arr[i] = pivot;
         Arr[i].type = 2;
         
-        // 可视化分区后的状态
+        //可视化分区后的状态
         Draw(Arr);
         Sleep(500);
         
-        // 重置下一个分区的元素类型
-        for (int k = low; k <= high; k++) {
-            if (k != i) Arr[k].type = 0;
+        //重置下一个分区的元素类型
+        for(int k = low; k <= high; k++)
+        {
+            if(k != i) Arr[k].type = 0;
         }
         
-        // 将子数组压入栈
-        if (i + 1 < high) stk.push({i + 1, high});
-        if (low < i - 1) stk.push({low, i - 1});
+        //将子数组压入栈
+        if(i + 1 < high) stk.push({i + 1, high});
+        if(low < i - 1) stk.push({low, i - 1});
     }
     
-    // 最终可视化 - 所有元素已排序
-    for (int i = 0; i < 10; i++) {
+    //最终可视化 - 所有元素已排序
+    for(int i = 0; i < 10; i++)
+    {
         Arr[i].type = 2;
     }
     Draw(Arr);
     
-    // 显示完成信息
+    //显示完成信息
     settextstyle(20, 0, _T("Arial"));
     settextcolor(LIGHTGREEN);
     
@@ -350,7 +372,7 @@ bool isNumber(const std::string& str)
     std::stringstream ss(str);
     int d;
     ss >> d;
-    return ss.eof(); // 成功解析且没有剩余字符
+    return ss.eof(); //成功解析且没有剩余字符
 
 }
 
@@ -438,7 +460,7 @@ int main()
         }
     }
     
-    while (true)
+    while(true)
     {
         Object objects[10];
         for(int i = 0; i < 10; i++) //设置排序数组
